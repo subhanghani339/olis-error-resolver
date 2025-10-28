@@ -16,7 +16,7 @@ function UsersPage() {
     try {
       setLoading(true);
       const data = await get('/users');
-      setUsers(data);
+      setUsers(data.data);
       setError(null);
     } catch (err) {
       setError('Failed to fetch users. Make sure the server is running.');

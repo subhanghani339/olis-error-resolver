@@ -33,7 +33,7 @@ function ErrorResults({ errors, onResolve, onExport }) {
         <div className="space-y-3">
           {errors.map((error) => (
             <ErrorRow
-              key={error.id}
+              key={`${error.orderId}-${error.dateSubmitted}`}
               error={error}
               onResolve={onResolve}
             />
