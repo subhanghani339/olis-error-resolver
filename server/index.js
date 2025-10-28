@@ -3,6 +3,10 @@ const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 const path = require('path');
 
+// Import routes
+const userRoutes = require('./routes/userRoutes');
+const resolutionTrackerRoutes = require('./routes/resolutionTrackerRoutes');
+
 require('dotenv').config();
 
 const prisma = new PrismaClient();
@@ -15,17 +19,21 @@ app.use((req, res, next) => {
     next();
 });
 
-// Example API: Get all users
-app.get('/api/users', async (req, res) => {
-    const users = await prisma.user.findMany();
-    res.json(users);
-});
+// API Routes
+app.use('/api/users', userRoutes);
+app.use('/api/resolutions', resolutionTrackerRoutes);
 
-// Example API: Create user
-app.post('/api/users', async (req, res) => {
-    const { name, email } = req.body;
-    const user = await prisma.user.create({ data: { name, email } });
-    res.json(user);
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: true,
+        message: 'Server is running successfully',
+        data: {
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            environment: process.env.NODE_ENV || 'development'
+        }
+    });
 });
 
 // -------------------- SERVE REACT (PRODUCTION) --------------------

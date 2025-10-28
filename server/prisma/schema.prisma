@@ -13,3 +13,18 @@ model User {
   name  String
   email String @unique
 }
+
+model OLIS_ORU_ResolutionTracker {
+  orderId         String
+  dateSubmitted   DateTime
+  errorCode       String?
+  errorMessage    String?
+  hl7Segment      String?
+  status          String?
+  comments        String?
+  resolvedBy      String?
+  resolvedDate    DateTime?
+  
+  @@id([orderId, dateSubmitted])
+  @@map("OLIS_ORU_ResolutionTracker")
+}
