@@ -1,12 +1,21 @@
 import { useState } from 'react';
+import LoadingSpinner from './LoadingSpinner';
 
 function ErrorRow({ error, onResolve }) {
   const [comment, setComment] = useState('');
+  const [isResolving, setIsResolving] = useState(false);
 
-  const handleResolve = () => {
-    if (comment.trim()) {
-      onResolve(error.orderId, error.dateSubmitted, comment);
-      setComment('');
+  const handleResolve = async () => {
+    if (comment.trim() && !isResolving) {
+      try {
+        setIsResolving(true);
+        await onResolve(error.orderId, error.dateSubmitted, comment);
+        setComment('');
+      } catch (err) {
+        console.error('Error resolving record:', err);
+      } finally {
+        setIsResolving(false);
+      }
     }
   };
 
@@ -81,18 +90,28 @@ function ErrorRow({ error, onResolve }) {
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="User comments..."
-                className="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={isResolving}
+                className="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
               <button
                 onClick={handleResolve}
-                disabled={!comment.trim()}
+                disabled={!comment.trim() || isResolving}
                 className="w-full bg-black hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1"
               >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
-                </svg>
-                Resolve
+                {isResolving ? (
+                  <>
+                    <LoadingSpinner size="small" className="text-white" />
+                    <span>Resolving...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
+                    </svg>
+                    <span>Resolve</span>
+                  </>
+                )}
               </button>
             </div>
           )}

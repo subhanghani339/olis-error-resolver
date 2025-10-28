@@ -8,7 +8,7 @@ const statusOptions = [
   { value: 'resolved', label: 'Resolved' }
 ];
 
-function FilterCriteria({ onFilter, onClearAll }) {
+function FilterCriteria({ onFilter, onClearAll, disabled = false }) {
   const [filters, setFilters] = useState({
     status: 'all',
     orderId: '',
@@ -53,12 +53,13 @@ function FilterCriteria({ onFilter, onClearAll }) {
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6 relative ${disabled ? 'opacity-60' : ''}`}>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-base font-semibold text-gray-900">Filter Criteria</h2>
         <button
           onClick={handleClearAll}
-          className="text-sm text-gray-600 hover:text-gray-800 font-medium flex justify-center items-center gap-1 border border-gray-200 rounded-full px-2 py-1"
+          disabled={disabled}
+          className="text-sm text-gray-600 hover:text-gray-800 font-medium flex justify-center items-center gap-1 border border-gray-200 rounded-full px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span className="text-base">×</span>
           Clear All
@@ -74,8 +75,9 @@ function FilterCriteria({ onFilter, onClearAll }) {
       <div className="flex bg-gray-100 rounded-full p-1 mb-6">
         {statusOptions.map((option) => (
           <button
-            onClick={() => handleStatusChange(option.value)}
-            className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all ${filters.status ===   option.value
+            onClick={() => !disabled && handleStatusChange(option.value)}
+            disabled={disabled}
+            className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all disabled:cursor-not-allowed ${filters.status === option.value
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
               }`}
@@ -94,6 +96,7 @@ function FilterCriteria({ onFilter, onClearAll }) {
           value={filters.orderId}
           onChange={handleChange}
           placeholder="Enter ID..."
+          disabled={disabled}
         />
 
         <FilterInput
@@ -103,6 +106,7 @@ function FilterCriteria({ onFilter, onClearAll }) {
           value={filters.fromDate}
           onChange={handleChange}
           placeholder="Pick a date"
+          disabled={disabled}
         />
 
         <FilterInput
@@ -112,6 +116,7 @@ function FilterCriteria({ onFilter, onClearAll }) {
           value={filters.toDate}
           onChange={handleChange}
           placeholder="Pick a date"
+          disabled={disabled}
         />
 
         <FilterInput
@@ -121,6 +126,7 @@ function FilterCriteria({ onFilter, onClearAll }) {
           value={filters.errorMessage}
           onChange={handleChange}
           placeholder="Any match..."
+          disabled={disabled}
         />
 
         <FilterSelect
@@ -130,8 +136,16 @@ function FilterCriteria({ onFilter, onClearAll }) {
           onChange={handleChange}
           options={errorCodeOptions}
           placeholder="Select error code..."
+          disabled={disabled}
         />
       </div>
+      
+      {/* Loading overlay */}
+      {disabled && (
+        <div className="absolute inset-0 bg-white bg-opacity-50 rounded-lg flex items-center justify-center">
+          <div className="text-sm text-gray-500">Loading filters...</div>
+        </div>
+      )}
     </div>
   );
 }

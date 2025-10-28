@@ -2,32 +2,43 @@ import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import FilterCriteria from '../components/FilterCriteria';
 import ErrorResults from '../components/ErrorResults';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorAlert from '../components/ErrorAlert';
 import { resolutionService } from '../services/resolutionService';
 
 function ErrorTrackerPage() {
-  // Mock data matching the screenshot
   const [errors, setErrors] = useState([]);
-
   const [filteredErrors, setFilteredErrors] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const getResolutions = async () => {
     try {
+      setIsLoading(true);
+      setError(null);
+      
       const response = await resolutionService.getAllResolutions();
       if (response.status) {
         setErrors(response.data);
         setFilteredErrors(response.data); // Also update filtered errors
         console.log('Resolutions loaded:', response.data);
       } else {
+        setError(response.message);
         console.error('Failed to fetch resolutions:', response.message);
       }
-    } catch (error) {
-      console.error('Error fetching resolutions:', error);
+    } catch (err) {
+      setError('Failed to fetch resolution records');
+      console.error('Error fetching resolutions:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     getResolutions();
   }, []);
+  
   const handleFilter = (filters) => {
     let filtered = [...errors];
     // Filter by order ID
@@ -74,6 +85,9 @@ function ErrorTrackerPage() {
 
   const handleResolve = async (orderId, dateSubmitted, comment) => {
     try {
+      setError(null); // Clear any existing errors
+      setSuccess(null); // Clear any existing success messages
+      
       const response = await resolutionService.resolveRecord(
         orderId, 
         dateSubmitted, 
@@ -84,12 +98,18 @@ function ErrorTrackerPage() {
       if (response.status) {
         // Refresh the data after successful resolve
         await getResolutions();
+        setSuccess(`Record ${orderId} resolved successfully!`);
         console.log('Record resolved successfully');
+        
+        // Auto-hide success message after 5 seconds
+        setTimeout(() => setSuccess(null), 5000);
       } else {
+        setError(`Failed to resolve record: ${response.message}`);
         console.error('Failed to resolve record:', response.message);
       }
-    } catch (error) {
-      console.error('Error resolving record:', error);
+    } catch (err) {
+      setError('Failed to resolve record');
+      console.error('Error resolving record:', err);
     }
   };
 
@@ -134,15 +154,37 @@ function ErrorTrackerPage() {
 
       {/* Main Content */}
       <div className="px-6 py-6">
+        {/* Success Message */}
+        <ErrorAlert 
+          error={success}
+          onDismiss={() => setSuccess(null)}
+          type="success"
+          className="mb-6"
+        />
+
+        {/* Error Message */}
+        <ErrorAlert 
+          error={error}
+          onDismiss={() => setError(null)}
+          type="error"
+          className="mb-6"
+        />
+
         <FilterCriteria
           onFilter={handleFilter}
           onClearAll={handleClearAll}
+          disabled={isLoading}
         />
-        <ErrorResults
-          errors={filteredErrors}
-          onResolve={handleResolve}
-          onExport={handleExport}
-        />
+        
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <ErrorResults
+            errors={filteredErrors}
+            onResolve={handleResolve}
+            onExport={handleExport}
+          />
+        )}
       </div>
     </div>
   );
