@@ -39,48 +39,18 @@ function ErrorTrackerPage() {
     getResolutions();
   }, []);
   
-  const handleFilter = (filters) => {
-    let filtered = [...errors];
-    // Filter by order ID
-    if (filters.orderId) {
-      filtered = filtered.filter(e =>
-        e.orderId.toLowerCase().includes(filters.orderId.toLowerCase())
-      );
+  const handleFilter = async (filters) => {
+    try {
+      const response = await resolutionService.getAllResolutions(filters);
+      if (response.status) {
+        setFilteredErrors(response.data);
+      } else {
+        setError(response.message);
+      }
+    } catch (err) {
+      setError('Failed to filter errors');
+      console.error('Error filtering errors:', err);
     }
-
-    // Filter by error message
-    if (filters.errorMessage) {
-      filtered = filtered.filter(e =>
-        e.errorMessage.toLowerCase().includes(filters.errorMessage.toLowerCase())
-      );
-    }
-
-    // Filter by error code
-    if (filters.errorCode) {
-      filtered = filtered.filter(e =>
-        e.errorCode.toLowerCase().includes(filters.errorCode.toLowerCase())
-      );
-    }
-
-    // Filter by date range
-    if (filters.fromDate) {
-      filtered = filtered.filter(e => {
-        const errorDate = new Date(e.dateSubmitted);
-        const fromDate = new Date(filters.fromDate);
-        return errorDate >= fromDate;
-      });
-    }
-
-    if (filters.toDate) {
-      filtered = filtered.filter(e => {
-        const errorDate = new Date(e.dateSubmitted);
-        const toDate = new Date(filters.toDate);
-        toDate.setHours(23, 59, 59, 999); // Include the entire day
-        return errorDate <= toDate;
-      });
-    }
-
-    setFilteredErrors(filtered);
   };
 
   const handleResolve = async (orderId, dateSubmitted, comment) => {

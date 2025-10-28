@@ -3,17 +3,17 @@ import FilterInput from './FilterInput';
 import FilterSelect from './FilterSelect';
 
 const statusOptions = [
-  { value: 'all', label: 'All Errors' },
-  { value: 'unresolved', label: 'Unresolved' },
-  { value: 'resolved', label: 'Resolved' }
+  { value: '', label: 'All Errors' },
+  { value: 'Unresolved', label: 'Unresolved' },
+  { value: 'Resolved', label: 'Resolved' }
 ];
 
 function FilterCriteria({ onFilter, onClearAll, disabled = false }) {
   const [filters, setFilters] = useState({
-    status: 'all',
+    status: '',
     orderId: '',
-    fromDate: '',
-    toDate: '',
+    startDate: '',
+    endDate: '',
     errorMessage: '',
     errorCode: ''
   });
@@ -35,10 +35,10 @@ function FilterCriteria({ onFilter, onClearAll, disabled = false }) {
 
   const handleClearAll = () => {
     const clearedFilters = {
-      status: 'all',
+      status: '',
       orderId: '',
-      fromDate: '',
-      toDate: '',
+      startDate: '',
+      endDate: '',
       errorMessage: '',
       errorCode: ''
     };
@@ -102,8 +102,8 @@ function FilterCriteria({ onFilter, onClearAll, disabled = false }) {
         <FilterInput
           label="From Date"
           type="date"
-          name="fromDate"
-          value={filters.fromDate}
+          name="startDate"
+          value={filters.startDate}
           onChange={handleChange}
           placeholder="Pick a date"
           disabled={disabled}
@@ -112,8 +112,8 @@ function FilterCriteria({ onFilter, onClearAll, disabled = false }) {
         <FilterInput
           label="To Date"
           type="date"
-          name="toDate"
-          value={filters.toDate}
+          name="endDate"
+          value={filters.endDate}
           onChange={handleChange}
           placeholder="Pick a date"
           disabled={disabled}

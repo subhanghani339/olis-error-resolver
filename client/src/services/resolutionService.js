@@ -10,6 +10,10 @@ export const resolutionService = {
         if (filters.status) params.append('status', filters.status);
         if (filters.errorCode) params.append('errorCode', filters.errorCode);
         if (filters.resolvedBy) params.append('resolvedBy', filters.resolvedBy);
+        if (filters.orderId) params.append('orderId', filters.orderId);
+        if (filters.startDate) params.append('startDate', filters.startDate);
+        if (filters.endDate) params.append('endDate', filters.endDate);
+        if (filters.errorMessage) params.append('errorMessage', filters.errorMessage);
 
         const queryString = params.toString();
         const endpoint = queryString ? `${apiEndpoints.resolutions.getAll}?${queryString}` : apiEndpoints.resolutions.getAll;

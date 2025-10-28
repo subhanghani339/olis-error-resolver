@@ -4,13 +4,14 @@ const prisma = new PrismaClient();
 // Get all resolution tracker records
 const getAllResolutions = async (req, res) => {
     try {
-        const { status, errorCode, resolvedBy, orderId, startDate, endDate } = req.query;
+        const { status, errorCode, resolvedBy, orderId, startDate, endDate, errorMessage } = req.query;
         
         const whereClause = {};
         if (status) whereClause.status = status;
         if (errorCode) whereClause.errorCode = errorCode;
         if (resolvedBy) whereClause.resolvedBy = { contains: resolvedBy };
         if (orderId) whereClause.orderId = { contains: orderId };
+        if (errorMessage) whereClause.errorMessage = { contains: errorMessage };
         
         // Date range filtering
         if (startDate || endDate) {
