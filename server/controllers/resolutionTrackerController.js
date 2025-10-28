@@ -4,12 +4,20 @@ const prisma = new PrismaClient();
 // Get all resolution tracker records
 const getAllResolutions = async (req, res) => {
     try {
-        const { status, errorCode, resolvedBy } = req.query;
+        const { status, errorCode, resolvedBy, orderId, startDate, endDate } = req.query;
         
         const whereClause = {};
         if (status) whereClause.status = status;
         if (errorCode) whereClause.errorCode = errorCode;
         if (resolvedBy) whereClause.resolvedBy = { contains: resolvedBy };
+        if (orderId) whereClause.orderId = { contains: orderId };
+        
+        // Date range filtering
+        if (startDate || endDate) {
+            whereClause.dateSubmitted = {};
+            if (startDate) whereClause.dateSubmitted.gte = new Date(startDate);
+            if (endDate) whereClause.dateSubmitted.lte = new Date(endDate);
+        }
         
         const resolutions = await prisma.oLIS_ORU_ResolutionTracker.findMany({
             where: whereClause,
@@ -25,42 +33,6 @@ const getAllResolutions = async (req, res) => {
         res.status(500).json({
             status: false,
             message: 'Failed to fetch resolution records',
-            data: null
-        });
-    }
-};
-
-// Get resolution by composite key (orderId and dateSubmitted)
-const getResolutionById = async (req, res) => {
-    try {
-        const { orderId, dateSubmitted } = req.params;
-        
-        const resolution = await prisma.oLIS_ORU_ResolutionTracker.findUnique({
-            where: {
-                orderId_dateSubmitted: {
-                    orderId: orderId,
-                    dateSubmitted: new Date(dateSubmitted)
-                }
-            }
-        });
-        
-        if (!resolution) {
-            return res.status(404).json({
-                status: false,
-                message: 'Resolution record not found',
-                data: null
-            });
-        }
-        
-        res.json({
-            status: true,
-            message: 'Resolution record retrieved successfully',
-            data: resolution
-        });
-    } catch (error) {
-        res.status(500).json({
-            status: false,
-            message: 'Failed to fetch resolution record',
             data: null
         });
     }
@@ -212,45 +184,9 @@ const deleteResolution = async (req, res) => {
     }
 };
 
-// Get resolution statistics
-const getResolutionStats = async (req, res) => {
-    try {
-        const stats = await prisma.oLIS_ORU_ResolutionTracker.groupBy({
-            by: ['status'],
-            _count: {
-                orderId: true
-            }
-        });
-        
-        const errorCodeStats = await prisma.oLIS_ORU_ResolutionTracker.groupBy({
-            by: ['errorCode'],
-            _count: {
-                orderId: true
-            }
-        });
-        
-        res.json({
-            status: true,
-            message: 'Resolution statistics retrieved successfully',
-            data: {
-                statusStats: stats,
-                errorCodeStats: errorCodeStats
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            status: false,
-            message: 'Failed to fetch resolution statistics',
-            data: null
-        });
-    }
-};
-
 module.exports = {
     getAllResolutions,
-    getResolutionById,
     createResolution,
     updateResolution,
-    deleteResolution,
-    getResolutionStats
+    deleteResolution
 };
