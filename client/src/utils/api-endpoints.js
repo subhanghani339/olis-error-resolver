@@ -8,8 +8,6 @@ const apiEndpoints = {
     },
     resolutions: {
         getAll: '/resolutions',
-        getStats: '/resolutions/stats',
-        getById: '/resolutions/:orderId/:dateSubmitted',
         create: '/resolutions',
         update: '/resolutions/:orderId/:dateSubmitted',
         delete: '/resolutions/:orderId/:dateSubmitted',
