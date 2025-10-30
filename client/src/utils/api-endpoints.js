@@ -12,6 +12,12 @@ const apiEndpoints = {
         update: '/resolutions/:orderId/:dateSubmitted',
         delete: '/resolutions/:orderId/:dateSubmitted',
     },
+    auth: {
+        login: '/auth/login',
+        register: '/auth/register',
+        logout: '/auth/logout',
+        profile: '/auth/profile',
+    },
 };
 
 export default apiEndpoints;

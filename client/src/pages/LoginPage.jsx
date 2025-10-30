@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FilterInput from '../components/FilterInput';
+import { PageRoutes } from '../utils/page-routes';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
@@ -9,6 +11,8 @@ const LoginPage = () => {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -22,12 +26,15 @@ const LoginPage = () => {
         e.preventDefault();
         setIsLoading(true);
 
-        // Simulate login process
-        setTimeout(() => {
+        try {
+            await login(formData.username, formData.password);
+            navigate(PageRoutes.ERROR_TRACKER);
+        } catch (err) {
+            console.error(err);
+            alert(err.response?.data?.message || 'Login failed');
+        } finally {
             setIsLoading(false);
-            // Navigate to error tracker page after successful login
-            navigate('/error');
-        }, 1500);
+        }
     };
 
     return (

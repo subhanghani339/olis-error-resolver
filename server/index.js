@@ -6,11 +6,14 @@ const path = require('path');
 // Import routes
 const userRoutes = require('./routes/userRoutes');
 const resolutionTrackerRoutes = require('./routes/resolutionTrackerRoutes');
+const authRoutes = require('./routes/authRoutes');
+
 
 require('dotenv').config();
 
 const prisma = new PrismaClient();
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
@@ -20,6 +23,7 @@ app.use((req, res, next) => {
 });
 
 // API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resolutions', resolutionTrackerRoutes);
 

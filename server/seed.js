@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function main() {
     // Seed users
-    // await seedUsers(prisma);
+    await seedUsers(prisma);
     
     // Seed resolution tracker data
     await seedResolutionTracker(prisma);
