@@ -8,9 +8,23 @@ const api = axios.create({
   },
 });
 
+
+// 🔐 Helper: set auth token dynamically
+export const setAuthToken = (token) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+  }
+};
+
 // Request interceptor (optional - for adding auth tokens, etc.)
 api.interceptors.request.use(
   (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {

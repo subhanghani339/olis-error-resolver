@@ -5,6 +5,7 @@ const {
     register,
     login,
     logout,
+    refresh,
     profile
 } = require('../controllers/authController');
 
@@ -19,6 +20,9 @@ router.post('/register', register);
 
 // Login user
 router.post('/login', login);
+
+// Refresh token
+router.post('/refresh', refresh);
 
 // Logout user (protected)
 router.post('/logout', verifyAuth, logout);

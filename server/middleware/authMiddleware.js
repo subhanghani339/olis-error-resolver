@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET || 'mysecret';
 
 const verifyAuth = (req, res, next) => {
-  const token = req.cookies?.token || req.headers['authorization']?.split(' ')[1];
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({
@@ -20,7 +21,7 @@ const verifyAuth = (req, res, next) => {
   } catch (err) {
     return res.status(403).json({
       status: false,
-      message: 'Invalid token.',
+      message: 'Invalid or expired token.',
       data: null
     });
   }
