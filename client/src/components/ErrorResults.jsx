@@ -1,6 +1,18 @@
 import ErrorRow from './ErrorRow';
+import { List, AutoSizer } from 'react-virtualized';
+import 'react-virtualized/styles.css';
 
 function ErrorResults({ errors, onResolve, onExport }) {
+
+  const rowRenderer = ({ index, key, style }) => {
+    const error = errors[index];
+    return (
+      <div key={key} style={style}>
+        <ErrorRow error={error} onResolve={onResolve} />
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="flex justify-between items-center bg-gray-100 p-6">
@@ -31,13 +43,27 @@ function ErrorResults({ errors, onResolve, onExport }) {
         </div>
       ) : (
         <div className="space-y-3">
-          {errors.map((error) => (
+          {/* {errors.map((error) => (
             <ErrorRow
               key={`${error.orderId}-${error.dateSubmitted}`}
               error={error}
               onResolve={onResolve}
             />
-          ))}
+          ))} */}
+          <div style={{ height: '70vh' }}>
+            <AutoSizer>
+              {({ height, width }) => (
+                <List
+                  width={width}
+                  height={height}
+                  rowCount={errors.length}
+                  rowHeight={120}
+                  rowRenderer={rowRenderer}
+                  overscanRowCount={10} 
+                />
+              )}
+            </AutoSizer>
+          </div>
         </div>
       )}
     </div>
