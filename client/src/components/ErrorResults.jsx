@@ -15,7 +15,7 @@ function ErrorResults({ errors, onResolve, onExport }) {
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="flex justify-between items-center bg-gray-100 p-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-100 gap-4 p-6">
         <div className="flex flex-col items-baseline gap-1">
           <h2 className="text-base font-semibold text-gray-900">Error Results</h2>
           <p className="text-sm text-gray-500">
