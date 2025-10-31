@@ -44,6 +44,7 @@ function ErrorTrackerPage() {
       const response = await resolutionService.getAllResolutions(filters);
       if (response.status) {
         setFilteredErrors(response.data);
+        setError(null);
       } else {
         setError(response.message);
       }

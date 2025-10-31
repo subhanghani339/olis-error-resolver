@@ -15,17 +15,17 @@ function FilterCriteria({ onFilter, onClearAll, disabled = false }) {
     startDate: '',
     endDate: '',
     errorMessage: '',
-    errorCode: ''
+    errorCode: []
   });
 
-  const handleChange = (e) => {
-    const newFilters = {
-      ...filters,
-      [e.target.name]: e.target.value
+    const handleChange = (e) => {
+      const newFilters = {
+        ...filters,
+        [e.target.name]: e.target.value
+      };
+      setFilters(newFilters);
+      onFilter(newFilters);
     };
-    setFilters(newFilters);
-    onFilter(newFilters);
-  };
 
   const handleStatusChange = (status) => {
     const newFilters = { ...filters, status };
@@ -52,6 +52,7 @@ function FilterCriteria({ onFilter, onClearAll, disabled = false }) {
     { value: 'AR', label: 'AR - Application Reject' }
   ];
 
+  console.log(filters);
   return (
     <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6 relative ${disabled ? 'opacity-60' : ''}`}>
       <div className="flex justify-between items-center mb-6">
